@@ -1,6 +1,7 @@
+const logger = require("../utils/logger");
+
 const loggerHandler = (req, res, next) => {
-  const timestamp = Date().toLocaleString();
-  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+  logger.info(`${req.method} ${req.url}`);
   next();
 };
 
