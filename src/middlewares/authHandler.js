@@ -10,11 +10,9 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    // Asegúrate de quitar el prefijo "Bearer " del token
     const bearerToken = token.startsWith("Bearer ")
       ? token.split(" ")[1]
       : token;
-    console.log(bearerToken);
     const verified = jwt.verifyToken(bearerToken);
     req.user = verified;
     next();

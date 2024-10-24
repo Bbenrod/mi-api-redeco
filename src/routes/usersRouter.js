@@ -10,8 +10,8 @@ const {
 } = require("../controllers/usersController");
 
 router.post("/create-super-user", createSuperUser);
-router.post("/create-user", createUser);
-router.get("/token", authMiddleware, getToken);
+router.post("/create-user", authMiddleware, createUser);
+router.get("/token", getToken);
 router.post("/gtoken", createToken);
 
 module.exports = router;

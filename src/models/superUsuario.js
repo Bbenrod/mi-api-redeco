@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/db");
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
 
 const SuperUsuario = sequelize.define(
   "SuperUsuario",
@@ -24,6 +23,7 @@ const SuperUsuario = sequelize.define(
     institucionid: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: () => crypto.randomUUID(),
     },
     is_active: {
       type: DataTypes.BOOLEAN,
@@ -33,24 +33,16 @@ const SuperUsuario = sequelize.define(
     profileid: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: () => crypto.randomUUID(),
     },
     token_access: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
     timestamps: false,
   }
 );
-
-// Generar ids y hashear la contraseña antes de crear un super usuario
-SuperUsuario.beforeCreate(async (user) => {
-  user.institucionid = crypto.randomUUID();
-  user.profileid = crypto.randomUUID();
-
-  const saltRounds = 10;
-  user.password = await bcrypt.hash(user.password, saltRounds);
-});
 
 module.exports = SuperUsuario;
