@@ -9,6 +9,6 @@ router.get("/", (req, res) => {
 });
 
 router.use("/auth/users", usersRouter);
-router.use("/quejas", quejasRouter);
+router.use("/redeco/quejas", quejasRouter);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/db");
-const SuperUsuario = require("./superUsuario"); // Asegúrate de importar el modelo
+const SuperUsuario = require("./superUsuario");
 
 const Queja = sequelize.define(
   "Queja",
@@ -108,11 +108,11 @@ const Queja = sequelize.define(
       allowNull: true,
     },
     superuser_id: {
-      type: DataTypes.UUID, // Tipo UUID para la relación
-      allowNull: false, // No puede ser nulo
+      type: DataTypes.UUID,
+      allowNull: false,
       references: {
-        model: SuperUsuario, // Referencia al modelo SuperUsuario
-        key: "userid", // Clave primaria en SuperUsuario
+        model: SuperUsuario,
+        key: "userid",
       },
     },
   },
@@ -121,10 +121,9 @@ const Queja = sequelize.define(
   }
 );
 
-// Definición de la relación con SuperUsuario
 Queja.belongsTo(SuperUsuario, {
-  foreignKey: "superuser_id", // Clave foránea en Queja
-  targetKey: "userid", // Clave primaria en SuperUsuario
+  foreignKey: "superuser_id",
+  targetKey: "userid",
 });
 
 module.exports = Queja;
