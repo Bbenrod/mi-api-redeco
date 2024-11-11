@@ -1,21 +1,21 @@
-const { hashPassword, comparePassword } = require("../utils/passwordUtils");
-const jwt = require("../utils/jwtUtils");
-const Usuario = require("../models/usuario");
-const SuperUsuario = require("../models/superUsuario");
-const logger = require("../utils/logger");
+const { hashPassword, comparePassword } = require('../utils/passwordUtils');
+const jwt = require('../utils/jwtUtils');
+const Usuario = require('../models/usuario');
+const SuperUsuario = require('../models/superUsuario');
+const logger = require('../utils/logger');
 
 // Crear superusuario
 const createSuperUser = async (req, res) => {
   const { key, username, password, confirm_password } = req.body;
 
   // Verificar que el `key` sea igual a "123"
-  if (key !== "123") {
-    return res.status(403).json({ message: "Llave de acceso incorrecta." });
+  if (key !== '123') {
+    return res.status(403).json({ message: 'Llave de acceso incorrecta.' });
   }
 
   // Verificar que las contraseñas coincidan
   if (password !== confirm_password) {
-    return res.status(400).json({ message: "Las contraseñas no coinciden." });
+    return res.status(400).json({ message: 'Las contraseñas no coinciden.' });
   }
 
   try {
@@ -32,7 +32,7 @@ const createSuperUser = async (req, res) => {
       );
 
       if (!isPasswordCorrect) {
-        return res.status(401).json({ message: "Contraseña incorrecta." });
+        return res.status(401).json({ message: 'Contraseña incorrecta.' });
       }
 
       // Verificar si ya tiene un token activo
@@ -48,7 +48,7 @@ const createSuperUser = async (req, res) => {
       }
 
       return res.status(200).json({
-        message: "El superusuario ya existe. Se ha validado la autenticación.",
+        message: 'El superusuario ya existe. Se ha validado la autenticación.',
         data: {
           userid: existingSuperUser.userid,
           username: existingSuperUser.username,
@@ -58,7 +58,7 @@ const createSuperUser = async (req, res) => {
     }
 
     // Si no existe, crear un nuevo superusuario
-    if (!username) return res.status(401).json({ message: "Usuario vacio." });
+    if (!username) return res.status(401).json({ message: 'Usuario vacio.' });
 
     const hashedPassword = await hashPassword(password);
     const newSuperUsuario = await SuperUsuario.create({
@@ -75,7 +75,7 @@ const createSuperUser = async (req, res) => {
     await newSuperUsuario.save();
 
     return res.status(201).json({
-      message: "El superusuario ha sido creado exitosamente!",
+      message: 'El superusuario ha sido creado exitosamente!',
       data: {
         userid: newSuperUsuario.userid,
         username: newSuperUsuario.username,
@@ -83,10 +83,10 @@ const createSuperUser = async (req, res) => {
       },
     });
   } catch (error) {
-    logger.error("Error al crear el superUsuario:", error);
+    logger.error('Error al crear el superUsuario:', error);
     return res
       .status(500)
-      .json({ message: "Error al procesar la solicitud.", error });
+      .json({ message: 'Error al procesar la solicitud.', error });
   }
 };
 
@@ -99,12 +99,12 @@ const createUser = async (req, res) => {
 
   // Verificar si el username está vacío
   if (!username) {
-    return res.status(401).json({ message: "Usuario vacío." });
+    return res.status(401).json({ message: 'Usuario vacío.' });
   }
 
   // Verificar que las contraseñas coincidan
   if (password !== confirm_password) {
-    return res.status(400).json({ message: "Las contraseñas no coinciden." });
+    return res.status(400).json({ message: 'Las contraseñas no coinciden.' });
   }
 
   try {
@@ -119,7 +119,7 @@ const createUser = async (req, res) => {
     });
 
     if (!superUsuario) {
-      return res.status(404).json({ message: "Superusuario no encontrado." });
+      return res.status(404).json({ message: 'Superusuario no encontrado.' });
     }
 
     let token_access;
@@ -132,14 +132,22 @@ const createUser = async (req, res) => {
       // Si el token ha expirado o es inválido, devolver un error y no crear el usuario
       return res.status(401).json({
         message:
-          "El token del superusuario ha caducado o es inválido. Por favor, actualízalo en /auth/users/token/.",
+          'El token del superusuario ha caducado o es inválido. Por favor, actualízalo en /auth/users/token/.',
       });
     }
 
     if (existingUsuario) {
+      const isPasswordCorrect = await comparePassword(
+        password,
+        existingUsuario.password
+      );
+
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ message: 'Contraseña incorrecta.' });
+      }
       // Si el usuario ya existe, devolver el token del superusuario
       return res.status(200).json({
-        message: "El usuario ya existe, devolviendo token del superusuario.",
+        message: 'El usuario ya existe, devolviendo token del superusuario.',
         data: {
           userid: existingUsuario.userid,
           username: existingUsuario.username,
@@ -157,7 +165,7 @@ const createUser = async (req, res) => {
     });
 
     return res.status(201).json({
-      message: "Usuario creado exitosamente.",
+      message: 'Usuario creado exitosamente.',
       data: {
         userid: newUsuario.userid,
         username: newUsuario.username,
@@ -165,16 +173,12 @@ const createUser = async (req, res) => {
       },
     });
   } catch (error) {
-    logger.error("Error al crear el usuario:", error);
+    logger.error('Error al crear el usuario:', error);
     return res.status(500).json({
-      message: "Error al crear el usuario.",
+      message: 'Error al crear el usuario.',
       error: error.message || error,
     });
   }
-};
-
-module.exports = {
-  createUser,
 };
 
 // Obtener un nuevo token
@@ -194,8 +198,10 @@ const getToken = async (req, res) => {
       );
 
       if (!isPasswordCorrect) {
-        return res.status(401).json({ message: "Contraseña incorrecta." });
+        return res.status(401).json({ message: 'Contraseña incorrecta.' });
       }
+    } else {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
 
     let token_access;
@@ -212,28 +218,22 @@ const getToken = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: "Autenticación exitosa",
+      message: 'Autenticación exitosa',
       user: {
         username: superUsuario.username,
         token_access, // Devolver el token (ya sea nuevo o el mismo)
       },
     });
   } catch (error) {
-    logger.error("Error al obtener el token:", error);
+    logger.error('Error al obtener el token:', error);
     return res
       .status(500)
-      .json({ message: "Error al obtener el token", error });
+      .json({ message: 'Error al obtener el token', error });
   }
-};
-
-const createToken = (req, res) => {
-  const token = jwt.createToken({ example: "" });
-  res.json({ message: `Ruta ${req.originalUrl} funcionando.`, token });
 };
 
 module.exports = {
   createSuperUser,
   createUser,
   getToken,
-  createToken,
 };

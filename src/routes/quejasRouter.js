@@ -1,16 +1,16 @@
-const express = require("express");
-const { authMiddleware } = require("../middlewares/authHandler");
+const express = require('express');
+const { authMiddleware } = require('../middlewares/authHandler');
 const {
   createQueja,
   deleteQueja,
   getQuejas,
-} = require("../controllers/quejasController");
+} = require('../controllers/quejasController');
 const router = express.Router();
 
-router.post("/", authMiddleware, createQueja);
+router.post('/', authMiddleware, createQueja);
 
-router.delete("/", authMiddleware, deleteQueja);
+router.delete('/', authMiddleware, deleteQueja);
 
-router.get("/", authMiddleware, getQuejas);
+router.get('/', authMiddleware, getQuejas);
 
 module.exports = router;

@@ -1,17 +1,15 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const { authMiddleware } = require("../middlewares/authHandler");
+const { authMiddleware } = require('../middlewares/authHandler');
 const {
-  createToken,
   getToken,
   createUser,
   createSuperUser,
-} = require("../controllers/usersController");
+} = require('../controllers/usersController');
 
-router.post("/create-super-user", createSuperUser);
-router.post("/create-user", authMiddleware, createUser);
-router.get("/token", getToken);
-router.post("/gtoken", createToken);
+router.post('/create-super-user', createSuperUser);
+router.post('/create-user', authMiddleware, createUser);
+router.get('/token', getToken);
 
 module.exports = router;
